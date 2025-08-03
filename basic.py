@@ -142,7 +142,6 @@ class Lexer:
 				char = self.current_char
 				self.advance()
 				return [], IllegalCharError(pos_start, self.pos, "'" + char + "'")
-
 		tokens.append(Token(TT_EOF, pos_start=self.pos))
 		return tokens, None
 
@@ -160,10 +159,14 @@ class Lexer:
 				num_str += self.current_char
 			self.advance()
 
-		if dot_count == 0:
-			return Token(TT_INT, int(num_str), pos_start, self.pos)
-		else:
-			return Token(TT_FLOAT, float(num_str), pos_start, self.pos)
+		try:
+			if dot_count == 0:
+				return Token(TT_INT, int(num_str), pos_start, self.pos)
+			else:
+				return Token(TT_FLOAT, float(num_str), pos_start, self.pos)
+		except ValueError:
+			return None, InvalidSyntaxError(pos_start, self.pos, "Invalid number format")
+
 
 #NODES
 class NumberNode:
